@@ -86,6 +86,7 @@ L.GPX = L.FeatureGroup.extend({
     this._info = {
       name: null,
       length: 0.0,
+      coords: [],
       elevation: {gain: 0.0, loss: 0.0, max: 0.0, min: Infinity, _points: []},
       hr: {avg: 0, _total: 0, _points: []},
       duration: {start: null, end: null, moving: 0, total: 0}
@@ -151,6 +152,8 @@ L.GPX = L.FeatureGroup.extend({
 
   get_total_speed:     function() { return this.m_to_km(this.get_distance()) / (this.get_total_time() / (3600 * 1000)); },
   get_total_speed_imp: function() { return this.to_miles(this.m_to_km(this.get_distance())) / (this.get_total_time() / (3600 * 1000)); },
+
+  getLatLngs:          function() { return this._info.coords; },
 
   get_elevation_gain:     function() { return this._info.elevation.gain; },
   get_elevation_loss:     function() { return this._info.elevation.loss; },
@@ -446,6 +449,7 @@ L.GPX = L.FeatureGroup.extend({
 
       last = ll;
       coords.push(ll);
+      this._info.coords.push(ll);
     }
 
     return coords;
