@@ -211,6 +211,7 @@ L.GPX = L.FeatureGroup.extend({
   },
 
   _load_xml: function(url, cb, options, async) {
+    var _this = this;
     if (async == undefined) async = this.options.async;
     if (options == undefined) options = this.options;
 
@@ -222,6 +223,7 @@ L.GPX = L.FeatureGroup.extend({
     req.onreadystatechange = function() {
       if (req.readyState != 4) return;
       if(req.status == 200) cb(req.responseXML, options);
+      else _this.fire('failed');    // Failed to load file (Not found for instance)
     };
     req.send(null);
   },
@@ -229,8 +231,17 @@ L.GPX = L.FeatureGroup.extend({
   _parse: function(input, options, async) {
     var _this = this;
     var cb = function(gpx, options) {
+      if (gpx == null) {
+        // Failed to parse XML
+        _this.fire('failed');
+        return;
+      }
       var layers = _this._parse_gpx_data(gpx, options);
-      if (!layers) return;
+      if (!layers) {
+        // Nothing to show
+        _this.fire('failed');
+        return;
+      }
       _this.addLayer(layers);
       _this.fire('loaded');
     }
